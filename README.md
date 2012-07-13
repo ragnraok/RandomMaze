@@ -7,8 +7,9 @@ I use DFS algorithm to generate it
 
 ![](http://i48.tinypic.com/34gt00j.png)
 
-- dependence
+## dependence
 
-pygame
-python 2.x
+- pygame
+
+- python 2.x
 
