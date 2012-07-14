@@ -4,6 +4,7 @@ from random_maze import RandomMaze
 import pygame
 from pygame.locals import *
 from sys import exit
+import sys
 
 pygame.init()
 
@@ -19,9 +20,13 @@ resolution = (width, height)
 
 ran_maze = RandomMaze(width//grid_size, height//grid_size)
 
-def get_maze_method(argv):
-        #return ran_maze.simply_maze
-        return ran_maze.dfs_maze
+def get_maze_method(option):
+        if option == 1:
+            return ran_maze.dfs_maze
+        elif option == 2:
+            return ran_maze.disjoint_make_maze
+        else:
+                return None
 
 def main(maze_method, speed=0.010, mode=0):
         """
@@ -39,6 +44,13 @@ def main(maze_method, speed=0.010, mode=0):
                 for event in pygame.event.get():
                         if event.type == QUIT:
                                 exit()
+
+                press_key = pygame.key.get_pressed()
+                
+                # press F5 to regenerate the maze
+                if press_key[K_F5]:
+                        index = 0
+                        maze, cell_list = maze_method()
 
                 #print index
                 
@@ -67,6 +79,38 @@ def main(maze_method, speed=0.010, mode=0):
 
                 pygame.display.update()
 
+def parser_arg(argv):
+        """
+        parser the arguments,
+        python main.py [OPTION]:
+                -d --dfs: use dfs algorithm to generate the maze, and return 1(default value)
+                -k --kruscal: use kruscal algorithm to generate the maze, and return 2
+        """
+        args = argv[1:]
+        if len(args) == 0:
+                return 1
+        elif len(args) > 1:
+                print 'Error option'
+                print 'Usage:'
+                print "(python) main.py [OPTION]: \n" + \
+                "  -d --dfs: use dfs algorithm to generate the maze(default option)\n" +\
+                "  -k --kruscal: use kruscal algorithm to generate the maze "
+                return 0
+        elif args[0] == '-d' or args[0] == '--dfs':
+                return 1
+        elif args[0] == '-k' or args[0] == '--kruscal':
+                return 2
+        else:
+                print 'Error option'
+                print 'Usage:'
+                print "(python) main.py [OPTION]: \n" + \
+                "  -d --dfs: use dfs algorithm to generate the maze(default option)\n" +\
+                "  -k --kruscal: use kruscal algorithm to generate the maze "
+                return 0
+
+
 if __name__ == '__main__':
-        main(maze_method = get_maze_method(None), mode = 1)
+        method = get_maze_method(parser_arg(sys.argv))
+        if method:
+            main(maze_method = get_maze_method(parser_arg(sys.argv)), mode = 1)
                                         

@@ -1,5 +1,31 @@
 from random import randint
 
+class DisjointSet(object):
+        def __init__(self, size):
+                self.size = size
+                self.set_list = [-1] * size
+
+        def find_root(self, node):
+                if self.set_list[node] < 0:
+                        return node
+                else:
+                        return self.find_root(self.set_list[node])
+        def uniont_set(self, node1, node2):
+                root1 = self.find_root(node1)
+                root2 = self.find_root(node2)
+
+                if root1 == root2:
+                        return
+                if self.set_list[root2] < self.set_list[root1]:
+                        self.set_list[root1] = root2
+                else:
+                        if self.set_list[root1] == self.set_list[root2]:
+                                self.set_list[root1] -= 1
+                        self.set_list[root2] = root1
+
+        def if_connected(self, node1, node2):
+                return self.find_root(node1) == self.find_root(node2)
+
 class RandomMaze(object):
         def __init__(self, width, height):
                 """
@@ -176,3 +202,103 @@ class RandomMaze(object):
         
                         next_index = (next_index + 1) % 4
 
+        def pos_to_list(self, row, col):
+                """
+                row and col is one based
+                """
+                cell_col_num = (self.width - 3) // 2
+                return (row - 1) * cell_col_num + (col - 1)
+        
+        def disjoint_make_maze(self):
+                direction = [
+                        (0, 1),
+                        (0, -1),
+                        (1, 0),
+                        (-1, 0)]
+        
+                #True is wall, False is road
+                maze = [True] * self.height
+                for i in range(self.height):
+                        maze[i] = [True]*self.width
+
+                path_track = []
+        
+                #set the borders
+                maze[0] = [False] * self.width
+                maze[self.height - 1] = [False] * self.width
+        
+                for i in range(self.height):
+                        maze[i][0] = False 
+                        maze[i][self.width - 1] = False
+
+                # also, set up the path_track list
+                # the first row
+                for i in range(self.width):
+                        path_track.append((0,i))
+                
+                # the last column
+                for i in range(1, self.height - 1):
+                        path_track.append((i, self.width - 1))
+        
+                # the last row
+                for i in reversed(range(self.width)):
+                        path_track.append((self.height - 1, i))
+        
+                # the first column
+                for i in reversed(range(1, self.height - 1)):
+                        path_track.append((i, 0))
+        
+                cell_row_num = (self.height - 3) // 2 #view the cell as wall
+                cell_col_num = (self.width - 3) // 2
+        
+                #print 'cell_row_num = ' + str(cell_row_num) + ' cell_col_num = ' + str(cell_col_num)
+        
+                start_pos = (1, 1)
+                end_pos = (cell_row_num, cell_col_num)
+                maze[2][1] = False
+                maze[cell_row_num * 2][cell_col_num * 2 + 1] = False
+
+                path_track.append((2, 1))
+                path_track.append((cell_row_num * 2, cell_col_num * 2 + 1))
+        
+                disjoint_set = DisjointSet(cell_row_num * cell_col_num)
+        
+                start_index = self.pos_to_list(start_pos[0], start_pos[1])
+                end_index = self.pos_to_list(end_pos[0], end_pos[1])
+        
+                while not disjoint_set.if_connected(start_index, end_index):
+                        rand_direction = direction[randint(0, len(direction) - 1)]
+        
+                        rand_row = randint(1, cell_row_num)
+                        rand_col = randint(1, cell_col_num)
+        
+                        #print 'rand_row = ' + str(rand_row) + ' rand_col = ' + str(rand_col)
+                        #print 'rand_direction = ' + str(rand_direction)
+        
+                        if (not 0 < rand_row + rand_direction[0] <= cell_row_num) or \
+                           (not 0 < rand_col + rand_direction[1] <= cell_col_num):
+                                #print 'continue'
+                                continue
+                        
+                        if maze[rand_row * 2 + rand_direction[0]][rand_col * 2 + rand_direction[1]] == True:
+                                # let it become the cell...
+                                maze[rand_row * 2][rand_col * 2] = False
+                                maze[rand_row * 2 + rand_direction[0] * 2][rand_col * 2 + rand_direction[1] * 2] = False
+
+                                path_track.append((rand_row * 2, rand_col * 2))
+                                path_track.append((rand_row * 2 + rand_direction[0] * 2, rand_col * 2 + rand_direction[1] * 2))
+
+                                node1 = self.pos_to_list(rand_row, rand_col)
+                                node2 = self.pos_to_list(rand_row + rand_direction[0], rand_col + rand_direction[1])
+        
+                                #print 'node1 = ' + str(node1) + ', node2 = ' + str(node2)
+        
+                                if not disjoint_set.if_connected(node1, node2):
+                                        # pull down the wall
+                                        maze[rand_row * 2 + rand_direction[0]][rand_col * 2 + rand_direction[1]] = False
+                                        disjoint_set.uniont_set(node1, node2)
+
+                                        path_track.append((rand_row * 2 + rand_direction[0], rand_col * 2 + rand_direction[1]))
+        
+                
+                return maze, path_track
