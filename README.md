@@ -15,9 +15,10 @@ Algorithm: DFS, Random Kruscal
 
 ##Usage
 
-python main.py [OPTION]:
+    python main.py [OPTION]:
         -d --dfs: use dfs algorithm to generate the maze(default option)
         -k --kruscal: use kruscal algorithm to generate the maze
+
 
 press F5, regenerate the maze
 
