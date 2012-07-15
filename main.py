@@ -1,5 +1,6 @@
 from gridview import GridView
 from random_maze import RandomMaze
+from path_finder import MazePathFinder
 
 import pygame
 from pygame.locals import *
@@ -15,10 +16,14 @@ grid_size = 24
 background_color = (230, 230, 100)
 grid_line_color = (0, 0, 0)
 cell_color = (50, 50, 255)
+path_color = (255, 50, 50)
 
 resolution = (width, height)
 
 ran_maze = RandomMaze(width//grid_size, height//grid_size)
+
+cell_row_num = (height//grid_size - 3) // 2
+cell_col_num = (width//grid_size - 3) // 2
 
 def get_maze_method(option):
         if option == 1:
@@ -37,7 +42,15 @@ def main(maze_method, speed=0.010, mode=0):
         screen = pygame.display.set_mode(resolution, 0, 32)
         clock = pygame.time.Clock()
         maze, cell_list = maze_method()
+
+        path_finder = MazePathFinder(maze, (2, 1), (cell_row_num * 2, cell_col_num * 2 + 1), 
+                              height//grid_size, width//grid_size)
+        path = path_finder.bfs_find_path()
+
         index = 0
+        path_index = 0
+        maze_finished = False
+
         pass_time = 0
         grid_view = GridView(screen, width, height, grid_size, grid_line_color) 
         while True:
@@ -50,7 +63,12 @@ def main(maze_method, speed=0.010, mode=0):
                 # press F5 to regenerate the maze
                 if press_key[K_F5]:
                         index = 0
+                        path_index = 0
                         maze, cell_list = maze_method()
+                        path_finder = MazePathFinder(maze, (2, 1), (cell_row_num * 2, cell_col_num * 2 + 1), 
+                                height//grid_size, width//grid_size)
+                        path = path_finder.bfs_find_path()
+                        maze_finished = False
 
                 #print index
                 
@@ -69,11 +87,25 @@ def main(maze_method, speed=0.010, mode=0):
                 # draw the grid
                 grid_view.draw()
 
+                # draw the path
+                if maze_finished and path:
+                        for i in range(path_index + 1):
+                                grid_view.fill_a_cell_with_circle(path[len(path) - i - 1][1], 
+                                                                  path[len(path) - i - 1][0], path_color)
+
                 time_passed_seconds = clock.tick() / 1000.0
                 pass_time += time_passed_seconds
 
                 if pass_time >= speed:
                         pass_time = 0
+                        if maze_finished:
+                                if path_index + 1 < len(path):
+                                        path_index += 1
+
+                        if index >= len(cell_list) - 1:
+                                #print 'maze_finished'
+                                maze_finished = True
+                                
                         if index + 1 < len(cell_list):
                                 index += 1
 

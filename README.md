@@ -5,7 +5,11 @@ generation a random maze, writtern by pygame
 
 Algorithm: DFS, Random Kruscal
 
-![](http://i48.tinypic.com/34gt00j.png)
+Find the shortest path: use BFS
+
+![random maze](http://i48.tinypic.com/34gt00j.png)
+
+![shortest path](http://i50.tinypic.com/2nkkxp4.png)
 
 ## dependence
 

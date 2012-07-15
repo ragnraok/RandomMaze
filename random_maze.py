@@ -116,10 +116,6 @@ class RandomMaze(object):
             return (maze, path_track)
     
         def dfs_maze(self):
-                """
-                width is the grid columns number
-                height is the grid rows number
-                """
                 # it will the separated cell as the nodes
                 cell_row_num = (self.height - 3) // 2
                 cell_col_num = (self.width - 3) // 2
@@ -129,18 +125,18 @@ class RandomMaze(object):
         
                 path_track = []
         
-                maze = [True]*self.height
+                maze = [1]*self.height
                 for i in range(self.height):
-                        maze[i] = [True]*self.width
+                        maze[i] = [1]*self.width
                 
-                # let he first row and the last row become True
-                maze[0] = [False]*self.width
-                maze[self.height - 1] = [False]*self.width
+                # let he first row and the last row become False 
+                maze[0] = [0]*self.width
+                maze[self.height - 1] = [0]*self.width
         
-                # let the first column and the last column become True
+                # let the first column and the last column become False
                 for row in maze:
-                        row[0] = False 
-                        row[self.width - 1] = False
+                        row[0] = 0 
+                        row[self.width - 1] = 0 
         
                 # also, set up the path_track list
                 # the first row
@@ -160,8 +156,8 @@ class RandomMaze(object):
                         path_track.append((i, 0))
         
                 # determinated the entry and the exit
-                maze[2][1] = False
-                maze[2*cell_row_num][2*cell_col_num + 1] = False
+                maze[2][1] = 0 
+                maze[2*cell_row_num][2*cell_col_num + 1] = 0
         
                 path_track.append((2, 1))
                 path_track.append((2*cell_row_num, 2*cell_col_num + 1))
@@ -189,14 +185,14 @@ class RandomMaze(object):
                 next_col = col * 2
                 #print 'next_row = ' + str(next_row) + ' next_col = ' + str(next_col)
         
-                maze[next_row][next_col] = False
+                maze[next_row][next_col] = 0
                 path_track.append((next_row, next_col))
         
                 next_index = randint(0, 3)
                 
                 for i in range(4):
-                        if maze[next_row + 2 * direction[next_index][0]][next_col + 2 * direction[next_index][1]] == True:
-                                maze[next_row + direction[next_index][0]][next_col + direction[next_index][1]] = False
+                        if maze[next_row + 2 * direction[next_index][0]][next_col + 2 * direction[next_index][1]] == 1:
+                                maze[next_row + direction[next_index][0]][next_col + direction[next_index][1]] = 0
                                 path_track.append((next_row + direction[next_index][0], next_col + direction[next_index][1]))
                                 self.__dfs(row + direction[next_index][0], col + direction[next_index][1], maze, path_track)
         
@@ -217,19 +213,19 @@ class RandomMaze(object):
                         (-1, 0)]
         
                 #True is wall, False is road
-                maze = [True] * self.height
+                maze = [1] * self.height
                 for i in range(self.height):
-                        maze[i] = [True]*self.width
+                        maze[i] = [1]*self.width
 
                 path_track = []
         
                 #set the borders
-                maze[0] = [False] * self.width
-                maze[self.height - 1] = [False] * self.width
+                maze[0] = [0] * self.width
+                maze[self.height - 1] = [0] * self.width
         
                 for i in range(self.height):
-                        maze[i][0] = False 
-                        maze[i][self.width - 1] = False
+                        maze[i][0] = 0 
+                        maze[i][self.width - 1] = 0 
 
                 # also, set up the path_track list
                 # the first row
@@ -255,8 +251,8 @@ class RandomMaze(object):
         
                 start_pos = (1, 1)
                 end_pos = (cell_row_num, cell_col_num)
-                maze[2][1] = False
-                maze[cell_row_num * 2][cell_col_num * 2 + 1] = False
+                maze[2][1] = 0 
+                maze[cell_row_num * 2][cell_col_num * 2 + 1] = 0
 
                 path_track.append((2, 1))
                 path_track.append((cell_row_num * 2, cell_col_num * 2 + 1))
@@ -280,10 +276,10 @@ class RandomMaze(object):
                                 #print 'continue'
                                 continue
                         
-                        if maze[rand_row * 2 + rand_direction[0]][rand_col * 2 + rand_direction[1]] == True:
+                        if maze[rand_row * 2 + rand_direction[0]][rand_col * 2 + rand_direction[1]] == 1:
                                 # let it become the cell...
-                                maze[rand_row * 2][rand_col * 2] = False
-                                maze[rand_row * 2 + rand_direction[0] * 2][rand_col * 2 + rand_direction[1] * 2] = False
+                                maze[rand_row * 2][rand_col * 2] = 0
+                                maze[rand_row * 2 + rand_direction[0] * 2][rand_col * 2 + rand_direction[1] * 2] = 0
 
                                 path_track.append((rand_row * 2, rand_col * 2))
                                 path_track.append((rand_row * 2 + rand_direction[0] * 2, rand_col * 2 + rand_direction[1] * 2))
@@ -295,7 +291,7 @@ class RandomMaze(object):
         
                                 if not disjoint_set.if_connected(node1, node2):
                                         # pull down the wall
-                                        maze[rand_row * 2 + rand_direction[0]][rand_col * 2 + rand_direction[1]] = False
+                                        maze[rand_row * 2 + rand_direction[0]][rand_col * 2 + rand_direction[1]] = 0
                                         disjoint_set.uniont_set(node1, node2)
 
                                         path_track.append((rand_row * 2 + rand_direction[0], rand_col * 2 + rand_direction[1]))
